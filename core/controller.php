@@ -1,14 +1,26 @@
 <?php
 
+/**
+ * v429 controller engine
+ */
 class controller {
 
+	/**
+	 * @var $_registModles registed model files
+	 */
 	protected $_registModels;
 	
+	/**
+	 * construct v429 controller !
+	 */
 	public function __construct()
 	{
 		$this->__loadModelFiles();
 	}
 
+	/**
+	 * load all model file from model dir
+	 */
 	protected function __loadModelFiles() {
 		$modelDir = dir('app/models');
  		while ($file = $modelDir->read()) {
@@ -22,6 +34,11 @@ class controller {
  		$modelDir->close();
 	}
 
+	/**
+	 * load a model obj
+	 *
+	 * @param $modelName model name 
+	 */
 	public function loadM($modelName) {
 		if (!$modelInfo = $this->_registModels[$modelName]) {
 			die('model '. $modelName . ' not found!');
@@ -34,6 +51,12 @@ class controller {
 		return $model;
 	}
 
+	/**
+	 * display a view
+	 *
+	 * @param $path view file path
+	 * @param $data view datas
+	 */
 	public function display($path, $data) {
 		$view = new View();
 

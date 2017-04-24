@@ -3,8 +3,6 @@
 /**
  * load all you need
  */
-$GLOBALS['config'] = include('app/config.php');
-
 include_once('core/model.php');
 
 include_once('core/request.php');

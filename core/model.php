@@ -32,12 +32,17 @@ class Model {
 	 */
 	public function __construct() 
 	{
+		$configs = include_once('app/config.php');
+		
+		if (!$configs) {
+			die('ERROR:config file not exist!');
+		}
 		//set mysql connect
 		$this->mysql =  new mysqli(
-			$GLOBALS['config']['mysql']['db_host'], 
-			$GLOBALS['config']['mysql']['db_user'], 
-			$GLOBALS['config']['mysql']['db_pwd'], 
-			$GLOBALS['config']['mysql']['db_database']
+			$configs['mysql']['db_host'], 
+			$configs['mysql']['db_user'], 
+			$configs['mysql']['db_pwd'], 
+			$configs['mysql']['db_database']
 		);
 
 		//connect error
