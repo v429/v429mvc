@@ -1,35 +1,40 @@
 <?php
 
+/**
+ * Request object for routes and controllers
+ */
+
 class Request {
 	/**
- 	 * @param $_routes  all route registed
+ 	 * @var $_routes  all route registed
  	 */
  	protected $_routes = [];
 
  	/**
- 	 * @param $_regestUris  all uri registed
+ 	 * @var $_regestUris  all uri registed
  	 */
  	protected $_regestUris = [];
 
 	/**
- 	 * @param $_currentUri  CURRENT URL
+ 	 * @var $_currentUri  CURRENT URL
  	 */
  	protected $_currentUri = '';
 
  	/**
- 	 * @param $_currentAction  CURRENT CONTROLLER ACTION
+ 	 * @var $_currentAction  CURRENT CONTROLLER ACTION
  	 */
  	protected $_currentAction = "";
 
  	 /**
- 	 * @param $_currentController  CURRENT CONTROLLER
+ 	 * @var $_currentController  CURRENT CONTROLLER
  	 */
  	protected $_currentController = "";
 
  	/**
- 	 * @param $_registControllers
+ 	 * @var $_registControllers
  	 */
  	protected $_registControllers;
+
  	/**
  	 * construct the v429!!
  	 */
