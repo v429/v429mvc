@@ -13,7 +13,7 @@ class indexController extends Controller {
 
 	public function getName() 
 	{
-		echo 'get name';
+		echo 'get name page';
 	}
-
 }
+

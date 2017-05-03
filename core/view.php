@@ -53,9 +53,9 @@ class View {
 	 * @param $filePath
 	 */
 	protected function _makeTpl ($filePath) {
-		$tplFIleName = md5 (time() . mt_rand(0, 500)) . '-tpl.php';
+		$tplFIleName = $filePath . '-tpl.php';
 
-		$tplFile = fopen($this->viewCacheDir . $tplFIleName, "a") or die("Unable to open file!");
+		$tplFile = fopen($this->viewCacheDir . $tplFIleName, "w") or die("Unable to open file!");
 
 		//load the view file content
 		$content = $this->_loadViewFile($filePath);
@@ -77,6 +77,8 @@ class View {
 	protected function _replaceCode($content) {
 		$content = $this->_replaceParam($content);
 
+		//$content = $this->_replaceIf($content);
+
 		return $content;
 	}
 
@@ -91,6 +93,24 @@ class View {
 		$content = str_replace("}}", "; ?>", $content);
 
 		return $content;
+	}
+
+	protected function _replaceIf($content) {
+		$result = $replace = '';
+
+		$patend = '/(\[if\]\()(.*)(\))(\s??)(.*)(\[elseif\]\()(.*)(\))(\s??)(.*)\[endif\]/';
+
+		preg_match_all($patend, $content, $result);
+
+		print_r($result);exit;
+		if ($result[0] && $result[1]) {
+			$replace = "<?php if" . $result[2][0] . "){ ?>";
+		}
+		$re = preg_replace('/(\[if\])(.*)(\))/', $replace, $content);
+
+		$re = str_replace('[else]', '<?php } else { ?>', $re);
+
+		return $re;
 	}
 
 	/**
