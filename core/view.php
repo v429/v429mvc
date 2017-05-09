@@ -70,14 +70,29 @@ class View {
 	}
 
 	/**
+	 * load the view file return content
+	 *
+	 * @param $fileName view file path
+	 */
+	protected function _loadViewFile($fileName = '') {
+		$path = $this->viewDir . $fileName . '.php';
+		if (!file_exists($path)) {
+			die('FILE : ' . $path . 'NOT EXIST');
+		}
+
+		$content = file_get_contents($path);
+
+		return $content;
+	}
+
+	/**
 	 * replace key world from view file content
 	 *
 	 * @param $content view file content
 	 */
 	protected function _replaceCode($content) {
 		$content = $this->_replaceParam($content);
-
-		//$content = $this->_replaceIf($content);
+		$content = $this->_replaceIfALl($content);
 
 		return $content;
 	}
@@ -95,38 +110,94 @@ class View {
 		return $content;
 	}
 
-	protected function _replaceIf($content) {
-		$result = $replace = '';
+	/**
+	 * replace all IF condition from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceIfALl($content) {
+		$this->_replaceIf($content);
+		$this->_replaceElse($content);
+		$this->_replaceEndIF($content);
+		$this->_replaceElseIf($content);
 
-		$patend = '/(\[if\]\()(.*)(\))(\s??)(.*)(\[elseif\]\()(.*)(\))(\s??)(.*)\[endif\]/';
-
-		preg_match_all($patend, $content, $result);
-
-		print_r($result);exit;
-		if ($result[0] && $result[1]) {
-			$replace = "<?php if" . $result[2][0] . "){ ?>";
-		}
-		$re = preg_replace('/(\[if\])(.*)(\))/', $replace, $content);
-
-		$re = str_replace('[else]', '<?php } else { ?>', $re);
-
-		return $re;
+		return $content;
 	}
 
 	/**
-	 * load the view file return content
+	 * replace IF condition from view file content
 	 *
-	 * @param $fileName view file path
+	 * @param $content view file content
 	 */
-	protected function _loadViewFile($fileName = '') {
-		$path = $this->viewDir . $fileName . '.php';
-		if (!file_exists($path)) {
-			die('FILE : ' . $path . 'NOT EXIST');
+	protected function _replaceIf(&$content) {
+		$result = $replace = '';
+
+		$patend = '/(\[if\])(\(.*)/';
+
+		preg_match_all($patend, $content, $result);
+
+		foreach($result[2] as $key => $value) {
+			$replace = '<?php if' .$value . '{ ?>';
+			$replaceRe = preg_replace($patend, $replace, $result[0][$key]);
+
+			$content = str_replace($result[0][$key], $replaceRe, $content);
 		}
+	}
 
-		$content = file_get_contents($path);
+	/**
+	 * replace else condition from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceElse(&$content) {
+		$result = $replace = '';
 
-		return $content;
+		$patend = '/(\[else\])/';
+
+		preg_match_all($patend, $content, $result);
+		
+		foreach($result[1] as $key => $value) {
+			$replace = '<?php } else {  ?>';
+			$content = preg_replace($patend, $replace, $content);
+		}
+	}
+
+	/**
+	 * replace endif str from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceEndIF(&$content) {
+		$result = $replace = '';
+
+		$patend = '/(\[endif\])/';
+
+		preg_match_all($patend, $content, $result);
+
+		foreach($result[1] as $key => $value) {
+			$replace = '<?php }  ?>';
+			$content = preg_replace($patend, $replace, $content);
+		}
+	}
+
+	/**
+	 * replace all IF condition from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceElseIf(&$content) {
+		$result = $replace = '';
+
+		$patend = '/(\[elseif\])(\(.*)/';
+
+		preg_match_all($patend, $content, $result);
+
+		foreach($result[2] as $key => $value) {
+			$replace = '<?php } elseif' .$value . '{ ?>';
+			$replaceRe = preg_replace($patend, $replace, $result[0][$key]);
+
+			$content = str_replace($result[0][$key], $replaceRe, $content);
+		}
 	}
 
 
