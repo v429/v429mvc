@@ -6,6 +6,11 @@
 class Model {
 
 	/**
+	 * @param $db config db name
+	 */
+	protected $db;
+
+	/**
 	 * @param $table table name define
 	 */
 	protected $table;
@@ -33,7 +38,8 @@ class Model {
 	public function __construct() 
 	{
 		$configs = include_once('app/config.php');
-		
+		$this->db = $configs['mysql']['db_database'];
+
 		if (!$configs) {
 			die('ERROR:config file not exist!');
 		}
@@ -77,9 +83,10 @@ class Model {
 	 */
 	protected function _initAllFIeld() 
 	{
-		$sql = 'select COLUMN_NAME from information_schema.COLUMNS where table_name = "' . $this->table.'";';
+		$sql = 'select COLUMN_NAME from information_schema.COLUMNS where table_name = "' . $this->table.'"
+				AND `TABLE_SCHEMA`="'. $this->db .'";';
 
-		$this->fields = array_column($this->_getSelectResult($sql), 'COLUMN_NAME');
+		$this->_fields = array_column($this->_getSelectResult($sql), 'COLUMN_NAME');
 	}
 
 	/**
@@ -165,11 +172,10 @@ class Model {
 	{
 		$result = 'WHERE ';
 
-		$this->_stringData($condition);
-
 		foreach ($condition as $key => $value) {
 			if (in_array($key, $this->_fields)) {
 				if (!is_array($value)) {
+					$this->_stringData($condition);
 					$result .= "`" . $key . "`=" . $value. ' AND ';
 				} else {
 					$result .= $this->_moreWhere($key, $value);
@@ -190,7 +196,9 @@ class Model {
 		$result = '`' . $field . '`';
 
 		$tag = strtolower($condition[0]);
-		$this->_stringData($condition[1]);
+		if (gettype($condition[1]) == 'string') {
+			$condition[1] == "'" . $condition[1] . "'";
+		}
 
 		switch ($tag) {
 			case 'in':

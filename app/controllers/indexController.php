@@ -11,6 +11,16 @@ class indexController extends Controller {
 		$this->display('index-test', $data);
 	}
 
+	public function userList() {
+		$user = $this->loadM('usermodel');
+
+		$list = $user->get(['id' => ['>', 0]]);
+
+		$data['list'] = $list;
+
+		$this->display('index-list', $data);
+	}
+
 	public function getName() 
 	{
 		echo 'get name page';

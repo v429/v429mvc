@@ -93,6 +93,7 @@ class View {
 	protected function _replaceCode($content) {
 		$content = $this->_replaceParam($content);
 		$content = $this->_replaceIfALl($content);
+		$content = $this->_replaceForeachAll($content);
 
 		return $content;
 	}
@@ -200,5 +201,54 @@ class View {
 		}
 	}
 
+	/**
+	 * replace all foreach condition from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceForeachAll($content) {
+		$this->_replaceForeach($content);
+		$this->_replaceEndForeach($content);
+
+		return $content;
+	}
+
+	/**
+	 * replace foreach str from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceForeach(&$content) {
+		$result = $replace = '';
+
+		$patend = '/(\[foreach\])(\(.*)/';
+
+		preg_match_all($patend, $content, $result);
+
+		foreach($result[2] as $key => $value) {
+			$replace = '<?php foreach' .$value . '{ ?>';
+			$replaceRe = preg_replace($patend, $replace, $result[0][$key]);
+
+			$content = str_replace($result[0][$key], $replaceRe, $content);
+		}
+	}
+
+	/**
+	 * replace endforeach str from view file content
+	 *
+	 * @param $content view file content
+	 */
+	protected function _replaceEndForeach(&$content) {
+		$result = $replace = '';
+
+		$patend = '/(\[endforeach\])/';
+
+		preg_match_all($patend, $content, $result);
+
+		foreach($result[1] as $key => $value) {
+			$replace = '<?php }  ?>';
+			$content = preg_replace($patend, $replace, $content);
+		}
+	}
 
 }
