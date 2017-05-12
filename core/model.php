@@ -95,7 +95,7 @@ class Model {
 	protected function _splitFieldStr() 
 	{
 		$result = array();
-		foreach ($this->fields as $key => &$value) {
+		foreach ($this->_fields as $key => &$value) {
 			//add ` to each field
 			if ($value == 'id') {
 				continue;
@@ -285,7 +285,15 @@ class Model {
 	 */
 	public function insert($data) 
 	{
-		//TODO:
+		$sql = "INSERT INTO `" . $this->table . "`" . $this->_splitFieldStr() . ' VALUES';
+
+		foreach ($data as $key => $value) {
+			$sql .= '(' . $this->_splitAddData($value) . '),';
+		}
+		//remove last ','
+		$sql = substr($sql, 0, -1) . ';';
+		
+		$this->query($sql);
 	}
 
 	/**
