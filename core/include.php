@@ -1,7 +1,7 @@
 <?php
 //error_reporting(E_ALL ^ E_NOTICE);
-define(_CORE_PATH, 'core/');
-define(_APP_PATH, 'app/');
+define('_CORE_PATH', 'core/');
+define('_APP_PATH', 'app/');
 /**
  * load all you need
  */

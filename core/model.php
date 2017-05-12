@@ -57,7 +57,7 @@ class Model {
 		}
 
 		//set charset
-		mysqli_set_charset($this->mysql, $GLOBALS['config']['mysql']['db_charset']);
+		mysqli_set_charset($this->mysql, $configs['mysql']['db_charset']);
 
 		//init fields
 		$this->_initAllFIeld();
