@@ -7,3 +7,6 @@
 #v1.1.0
 view层实现模板替换if else elseif foreach
 model层实现insert批量插入
+
+#v1.2.0
+psr-4 autoload
