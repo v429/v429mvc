@@ -2,7 +2,8 @@
 
 class indexController extends Controller {
 	
-	public function index() {
+	public function index() 
+	{
 		$user = $this->loadM('usermodel');
 
 		$userInfo = $user->find(1);
@@ -36,7 +37,8 @@ class indexController extends Controller {
 		$this->display('add-user', []);
 	}
 
-	public function testInsert() {
+	public function testInsert() 
+	{
 		$user = $this->loadM('usermodel');
 
 		$data = [

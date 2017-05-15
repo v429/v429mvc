@@ -22,7 +22,8 @@ class View {
  	 *
  	 * @param dir view dir define
  	 */
-	public function __construct($dir = 'app/views/') {
+	public function __construct($dir = 'app/views/') 
+	{
 		$this->viewDir = $dir;
 
 		$this->viewCacheDir = "cache/views/";
@@ -34,7 +35,8 @@ class View {
 	 * @param $filePath view file path 
 	 * @param $data the data to file
 	 */
-	public function display($filePath , $data = []) {
+	public function display($filePath , $data = []) 
+	{
 		foreach ($data as $key => $value) {
 			$$key = $value;
 		}
@@ -52,7 +54,8 @@ class View {
 	 *
 	 * @param $filePath
 	 */
-	protected function _makeTpl ($filePath) {
+	protected function _makeTpl ($filePath) 
+	{
 		$tplFIleName = $filePath . '-tpl.php';
 
 		$tplFile = fopen($this->viewCacheDir . $tplFIleName, "w") or die("Unable to open file!");
@@ -74,7 +77,8 @@ class View {
 	 *
 	 * @param $fileName view file path
 	 */
-	protected function _loadViewFile($fileName = '') {
+	protected function _loadViewFile($fileName = '') 
+	{
 		$path = $this->viewDir . $fileName . '.php';
 		if (!file_exists($path)) {
 			die('FILE : ' . $path . 'NOT EXIST');
@@ -90,7 +94,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceCode($content) {
+	protected function _replaceCode($content) 
+	{
 		$content = $this->_replaceParam($content);
 		$content = $this->_replaceIfALl($content);
 		$content = $this->_replaceForeachAll($content);
@@ -103,7 +108,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceParam($content) {
+	protected function _replaceParam($content) 
+	{
 		$content = str_replace('{{', '<?php echo ', $content);
 
 		$content = str_replace("}}", "; ?>", $content);
@@ -116,7 +122,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceIfALl($content) {
+	protected function _replaceIfALl($content) 
+	{
 		$this->_replaceIf($content);
 		$this->_replaceElse($content);
 		$this->_replaceEndIF($content);
@@ -130,7 +137,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceIf(&$content) {
+	protected function _replaceIf(&$content) 
+	{
 		$result = $replace = '';
 
 		$patend = '/(\[if\])(\(.*)/';
@@ -150,7 +158,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceElse(&$content) {
+	protected function _replaceElse(&$content) 
+	{
 		$result = $replace = '';
 
 		$patend = '/(\[else\])/';
@@ -168,7 +177,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceEndIF(&$content) {
+	protected function _replaceEndIF(&$content) 
+	{
 		$result = $replace = '';
 
 		$patend = '/(\[endif\])/';
@@ -186,7 +196,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceElseIf(&$content) {
+	protected function _replaceElseIf(&$content) 
+	{
 		$result = $replace = '';
 
 		$patend = '/(\[elseif\])(\(.*)/';
@@ -206,7 +217,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceForeachAll($content) {
+	protected function _replaceForeachAll($content) 
+	{
 		$this->_replaceForeach($content);
 		$this->_replaceEndForeach($content);
 
@@ -218,7 +230,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceForeach(&$content) {
+	protected function _replaceForeach(&$content) 
+	{
 		$result = $replace = '';
 
 		$patend = '/(\[foreach\])(\(.*)/';
@@ -238,7 +251,8 @@ class View {
 	 *
 	 * @param $content view file content
 	 */
-	protected function _replaceEndForeach(&$content) {
+	protected function _replaceEndForeach(&$content) 
+	{
 		$result = $replace = '';
 
 		$patend = '/(\[endforeach\])/';
