@@ -1,4 +1,7 @@
 <?php
+
+namespace Core;
+
 /**
  * mysql connect and data model base object
  */
@@ -44,7 +47,7 @@ class Model {
 			die('ERROR:config file not exist!');
 		}
 		//set mysql connect
-		$this->mysql =  new mysqli(
+		$this->mysql =  new \mysqli(
 			$configs['mysql']['db_host'], 
 			$configs['mysql']['db_user'], 
 			$configs['mysql']['db_pwd'], 

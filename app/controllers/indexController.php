@@ -1,10 +1,15 @@
 <?php
 
+namespace App\Controller;
+
+use Core\Controller;
+use App\Models\UserModel;
+
 class indexController extends Controller {
 	
 	public function index() 
 	{
-		$user = $this->loadM('usermodel');
+		$user = new UserModel();
 
 		$userInfo = $user->find(1);
 		$data['user'] = $userInfo;

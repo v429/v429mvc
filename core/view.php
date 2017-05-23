@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 /**
  * view engine for v429
  * start view

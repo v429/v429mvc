@@ -1,5 +1,9 @@
 <?php
 
+namespace Core;
+
+use Core\Request;
+
 /**
  * start app v429!
  */
