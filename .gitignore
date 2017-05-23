@@ -1,2 +1,4 @@
+composer.lock
+app/config.php
 cache/views/
 vendor/
