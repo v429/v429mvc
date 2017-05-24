@@ -6,7 +6,10 @@ namespace Core;
  * mysql connect and data model base object
  */
 
-class Model {
+class Model 
+{
+
+	public $sql = [];
 
 	/**
 	 * @param $db config db name
@@ -38,9 +41,9 @@ class Model {
 	/**
 	 * construct v429 model !!!
 	 */
-	public function __construct() 
+	public function __construct($table = '', $primaryKey = '') 
 	{
-		$configs = include_once('app/config.php');
+		$configs = include('app/config.php');
 		$this->db = $configs['mysql']['db_database'];
 
 		if (!$configs) {
@@ -62,6 +65,15 @@ class Model {
 		//set charset
 		mysqli_set_charset($this->mysql, $configs['mysql']['db_charset']);
 
+		//fill self table and primary key
+		if ($table) {
+			$this->table = $table;
+		}
+
+		if ($primaryKey) {
+			$this->primaryKey = $primaryKey;
+		}
+
 		//init fields
 		$this->_initAllFIeld();
 	}
@@ -71,6 +83,8 @@ class Model {
 	 */
 	protected function _getSelectResult($sql) 
 	{
+		$this->sql = $sql;
+
 		$query = $this->mysql->query($sql);
 
 		$data = array();
@@ -264,6 +278,8 @@ class Model {
 	 */
 	public function query($sql) 
 	{
+		$this->sql = $sql;
+
 		if ($this->mysql->query($sql)) {
 			return $this->mysql->insert_id;
 		}
@@ -281,6 +297,8 @@ class Model {
 		$sql .= ' VALUES(' . $this->_splitAddData($data). ');';
 
 		$this->query($sql);
+
+		return mysqli_insert_id($this->mysql);
 	}
 
 	/**
@@ -365,5 +383,16 @@ class Model {
 		$result = $this->get([$this->primaryKey => $id]);
 
 		return $result ? $result[0] : [];
+	}
+
+	/**
+	 * get fields public function
+	 * 
+	 * @author v429
+	 * @return array fields
+	 */
+	public function getFields()
+	{
+		return $this->_fields;
 	}
 }

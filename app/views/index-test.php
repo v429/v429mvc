@@ -4,10 +4,10 @@
 <style>
 .main_content {
 	width:50%; 
-	height:200px; 
+	height:200px;
 	border: 1px solid red; 
 	margin:auto;
-	padding:5rem
+	padding:5rem;
 }
 
 </style>

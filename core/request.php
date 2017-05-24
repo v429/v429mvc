@@ -5,7 +5,8 @@ namespace Core;
  * Request object for routes and controllers
  */
 
-class Request {
+class Request 
+{
 	/**
  	 * @var $_routes  all route registed
  	 */

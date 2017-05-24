@@ -4,17 +4,30 @@ namespace App\Controller;
 
 use Core\Controller;
 use App\Models\UserModel;
+use App\Models\TestModel;
 
 class indexController extends Controller {
 	
 	public function index() 
 	{
-		$user = new UserModel();
+		$test = new TestModel();
+		$test->name = 'orm name';
+		$test->content = 'orm content';
+		$test->birthday = time();
+		$test->sex = 2;
+
+		$test->save();
+
+		$result = TestModel::find(1);
+		$result->name = 'update name orm';
+		$result->save();
+echo '<pre>';print_r($result);exit;
+/*		$user = new UserModel();
 
 		$userInfo = $user->find(1);
 		$data['user'] = $userInfo;
 
-		$this->display('index-test', $data);
+		$this->display('index-test', $data);*/
 	}
 
 	public function userList() {
@@ -29,7 +42,7 @@ class indexController extends Controller {
 
 	public function getName() 
 	{
-		if ($_POST['sub-add-user']) {
+		if (isset($_POST['sub-add-user'])) {
 			$values = $_POST;
 
 			$user = $this->loadM('usermodel');

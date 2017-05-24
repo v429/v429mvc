@@ -7,7 +7,8 @@ namespace Core;
  * start view
  */
 
-class View {
+class View 
+{
 	
 	/**
 	 * @var view file dir

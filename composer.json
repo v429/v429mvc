@@ -16,7 +16,8 @@
     		"core/model.php",
     		"core/view.php",
     		"core/request.php",
-    		"core/v429.php"
+    		"core/v429.php",
+            "core/vModel.php"
     	],
         "classmap": [
             "app/controllers",
