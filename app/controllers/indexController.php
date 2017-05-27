@@ -10,7 +10,7 @@ class indexController extends Controller {
 	
 	public function index() 
 	{
-		$test = new TestModel();
+/*		$test = new TestModel();
 		$test->name = 'orm name';
 		$test->content = 'orm content';
 		$test->birthday = time();
@@ -20,10 +20,12 @@ class indexController extends Controller {
 
 		$result = TestModel::find(1);
 		$result->name = 'update name orm';
-		$result->save();
-echo '<pre>';print_r($result);exit;
-/*		$user = new UserModel();
+		$result->save();*/
 
+		$result = TestModel::where('id', '>', '0')->where('sex', 1)->get();
+echo '<pre>';print_r($result);exit;
+		$user = new UserModel();
+/*
 		$userInfo = $user->find(1);
 		$data['user'] = $userInfo;
 

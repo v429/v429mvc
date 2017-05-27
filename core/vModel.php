@@ -9,23 +9,63 @@ use Core\Model;
  */
 class vModel
 {
-	protected $model;
+	//more condition enum
+	const MORE_WHERE_CONDITION = ['>', '<', '<>', 'like', 'in', 'between'];
 
-	protected $primaryKey;
-
-	protected $table;
-
+	/**
+	 * recodes fields value
+	 * @var array
+	 */
 	protected $fieldsValues = [];
 
+	/**
+	 * model object
+	 * @var object
+	 */
+	protected $model;
+
+	/**
+	 * table primary key
+	 * @var string
+	 */
+	protected $primaryKey;
+
+	/**
+	 * table
+	 * @var string
+	 */
+	protected $table;
+
+	/**
+	 * query sqls 
+	 * @var array
+	 */
 	protected $querySql = [];
 
-	protected $whereCondition = '';
+	/**
+	 * where conditions
+	 * @var array
+	 */
+	protected $whereCondition = [];
 
-	protected $orderCondition = '';
+	/**
+	 * order conditions
+	 * @var array
+	 */
+	protected $orderCondition = [];
 
-	protected $groupCondition = '';
+	/**
+	 * group conditions
+	 * @var array
+	 */
+	protected $groupCondition = [];
 
-	protected $joins = '';
+	/**
+	 * table joins
+	 * @var array
+	 */
+	protected $joins = [];
+
 
 	/**
 	 * [construction]
@@ -33,6 +73,7 @@ class vModel
 	 */
 	public function __construct() 
 	{
+		//new model
 		$this->model = new Model($this->table, $this->primaryKey);
 
 		$this->_fillFiledProperty();
@@ -57,7 +98,7 @@ class vModel
 			$data[$field] = $this->$field;
 		}
 
-		// do update query
+		//do update query
 		if ($this->$primaryKey) {
 			$whereCondition = [$this->primaryKey => $this->$primaryKey];
 
@@ -68,12 +109,89 @@ class vModel
 			return $result;
 		}
 
-		//do insert query 
+		//do insert query
 		$this->$primaryKey = $this->model->add($data);
 
 		$this->_afterQuery();
 
 		return $this->$primaryKey;
+	}
+
+	/**
+	 * where condition fill
+	 * 
+	 * @author v429
+	 * @param  [type] $field  [table field]
+	 * @param  [type] $paramA [value or more condition]
+	 * @param  string $paramB [value]
+	 * @return [type] obj     [self]
+	 */
+	public function where($field, $paramA, $paramB = '')
+	{
+		$self = isset($this) ? $this : new static;
+
+		//field is in table?
+		if (!in_array($field, $self->model->getFields())) {
+			die('ERROR field `' . $field . '` not exist in table '. $self->table . '!');
+		}
+
+		//has more where condition
+		if (in_array($paramA, self::MORE_WHERE_CONDITION)) {
+			$self->whereCondition[$field] = [
+				'more_condition' => $paramA,
+				'value'         => $paramB,
+			];
+		} else {
+			$self->whereCondition[$field] = [
+				'value'         => $paramA,
+				'more_condition' => '',
+			];
+		}
+
+		return $self;
+	}
+
+	/**
+	 * recode order by
+	 * 
+	 * @author v429
+	 * @param  string $field [table field]
+	 * @param  string $order [order condition]
+	 */
+	public function orderBy($field, $order = 'ASC')
+	{
+		$this->orderCondition = [$field, $order];
+
+		return $this;
+	}
+
+	/**
+	 * get recodes
+	 * 
+	 * @author v429
+	 * @return [type] [description]
+	 */
+	public function get()
+	{
+		$results = $whereCondition = [];		
+		//query where
+		foreach ($this->whereCondition as $k => $v) {
+			$whereCondition[$k] = $v['more_condition'] ? [$v['more_condition'], $v['value']] : $v['value'];
+		}
+
+		$selects = $this->model->select($whereCondition, $this->orderCondition);
+
+		foreach ($selects as $recode) {
+			$obj = new $this;
+
+			foreach ($recode as $field => $re) {
+				$obj->$field = $re;
+			}
+
+			$results[] = $obj;
+		}
+		
+		return $results;
 	}
 
 	/**
@@ -83,13 +201,13 @@ class vModel
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
-	public static function find($id) 
+	public static function find($id)
 	{
 		$self = new static;
 
-		$fileds = $self->model->find($id);
+		$fields = $self->model->find($id);
 
-		foreach ($fileds as $key => $value) {
+		foreach ($fields as $key => $value) {
 			$self->$key = $value;
 		}
 
@@ -104,9 +222,9 @@ class vModel
 	 */
 	protected function _fillFiledProperty()
 	{
-		$fileds = $this->model->getFields();
+		$fields = $this->model->getFields();
 
-		foreach ($fileds as $field) {
+		foreach ($fields as $field) {
 			$this->fieldsValues[$field] = '';
 		}
 	}

@@ -346,7 +346,7 @@ class Model
 	/**
 	 * get records by where condition and order condition and limit condition and fields
 	 */
-	public function get($whereCondition, $orderBy = '', $offset = 0, $limit = 0, $fields = []) 
+	public function select($whereCondition, $orderBy = '', $offset = 0, $limit = 0, $fields = []) 
 	{
 		$sql = "SELECT * FROM `" . $this->table . '` ';
 
