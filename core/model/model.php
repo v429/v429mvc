@@ -376,6 +376,22 @@ class Model
 	}
 
 	/**
+	 * get recode count by where condition
+	 */
+	public function count($whereCondition = '')
+	{
+		$sql = "SELECT count(*) FROM `" . $this->table . '` ';
+
+		$sql .= $this->_whereCondition($whereCondition);
+
+		$sql .= ';';
+
+		$result = $this->_getSelectResult($sql);
+
+		return $result[0]['count(*)'];
+	}
+
+	/**
 	 * get one record by primary key
 	 */
 	public function find($id) 

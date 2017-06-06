@@ -199,7 +199,16 @@ class vModel implements Entity
 	 */
 	public function whereIn($field, array $param)
 	{
-		//TODO
+		$self = isset($this) ? $this : new static;
+
+		//field is in table?
+		if (!in_array($field, $self->model->getFields())) {
+			die('ERROR field `' . $field . '` not exist in table '. $self->table . '!');
+		}
+
+		$self->whereCondition[$field] = ['more_condition' => 'IN', 'value' => $param];
+
+		return $self;
 	}
 
 	/**
@@ -268,18 +277,20 @@ class vModel implements Entity
 	 */
 	public function get()
 	{
+		$self = isset($this) ? $this : new static;
+
 		$results = $whereCondition = [];
-		//echo '<pre>';print_r($this->whereCondition);exit;
+
 		//query where
-		foreach ($this->whereCondition as $k => $v) {
+		foreach ($self->whereCondition as $k => $v) {
 			$whereCondition[$k] = $v['more_condition'] ? [$v['more_condition'], $v['value']] : $v['value'];
 		}
 
 		//get select recodes
-		$selects = $this->model->select($whereCondition, $this->orderCondition, $this->offset, $this->limit);
+		$selects = $self->model->select($whereCondition, $self->orderCondition, $self->offset, $self->limit);
 
 		foreach ($selects as $recode) {
-			$obj = new QueryResult($this->table, $this->primaryKey);
+			$obj = new QueryResult($self->table, $self->primaryKey);
 
 			foreach ($recode as $field => $re) {
 				$obj->$field = $re;
@@ -288,6 +299,42 @@ class vModel implements Entity
 		}		
 
 		return $results;
+	}
+
+	/**
+	 * get recodes count
+	 */
+	public function count()
+	{
+		$self = isset($this) ? $this : new static;
+
+		$whereCondition = [];
+
+		//query where
+		foreach ($self->whereCondition as $k => $v) {
+			$whereCondition[$k] = $v['more_condition'] ? [$v['more_condition'], $v['value']] : $v['value'];
+		}
+
+		$count = $self->model->count($whereCondition);
+
+		return $count;
+	}
+
+	public function paginate($limit)
+	{
+		$self = $this;
+
+		$page = $_POST['page'] ? $_POST['page'] : $_GET['page'];
+		$offset = $page ? ($page-1) * $limit : 0;
+		$this->limit($offset, $limit);
+
+		$total = $self->count();
+
+		$lastPage = ceil($total / $limit);
+
+		$recodes = $self->get();
+
+		return compact('total', 'lastPage',  'offset', 'limit', 'recodes');
 	}
 
 	/**

@@ -101,6 +101,16 @@ interface Entity
 	public function get();
 
 	/**
+	 * get recodes with paginate
+	 * 
+	 * @param  [type] $offset [description]
+	 * @param  [type] $limit  [description]
+	 * @author v429
+	 * @return [type] [description]
+	 */
+	public function paginate($limit);
+
+	/**
 	 * start mysql transaction
 	 * 
 	 * @author v429
