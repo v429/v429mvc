@@ -14,17 +14,22 @@ class indexController extends Controller {
 		$test->name = 'orm name';
 		$test->content = 'orm content';
 		$test->birthday = time();
-		$test->sex = 2;
+		$test->sex = 1;
 
-		$test->save();
+		$test->save();*/
 
-		$result = TestModel::find(1);
+/*		$result = TestModel::find(1);
 		$result->name = 'update name orm';
 		$result->save();*/
 
-		$result = TestModel::where('id', '>', '0')->where('sex', 1)->get();
-echo '<pre>';print_r($result);exit;
-		$user = new UserModel();
+		$result = TestModel::where('sex', 2)
+							->whereBetween('id', [1,3])->orderBy('sex', 'desc')->limit(0, 4)->get();
+		//$result = TestModel::find(1);
+
+		//$result->name = 'orm name save 2';
+		//$result->save();
+		echo '<pre>';print_r($result);exit;
+		//$user = new UserModel();
 /*
 		$userInfo = $user->find(1);
 		$data['user'] = $userInfo;
@@ -73,4 +78,3 @@ echo '<pre>';print_r($result);exit;
 		var_dump($rs);
 	}
 }
-

@@ -1,13 +1,12 @@
 <?php
+namespace Core\Model;
 
-namespace Core;
-
-use Core\Model;
-
+use Core\Model\Model;
+use Core\Model\Entity;
 /**
  * orm vmodel class
  */
-class vModel
+class vModel implements Entity
 {
 	//more condition enum
 	const MORE_WHERE_CONDITION = ['>', '<', '<>', 'like', 'in', 'between'];
@@ -66,13 +65,30 @@ class vModel
 	 */
 	protected $joins = [];
 
+	/**
+	 * select limit
+	 * @var array
+	 */
+	protected $limit = 0;
+
+	/**
+	 * select offset
+	 * @var integer
+	 */
+	protected $offset = 0;
+
 
 	/**
 	 * [construction]
 	 * @author v429
 	 */
-	public function __construct() 
+	public function __construct($table = '', $primaryKey = '') 
 	{
+		if ($table) {
+			$this->table = $table;
+
+			$this->primaryKey = $primaryKey;
+		}
 		//new model
 		$this->model = new Model($this->table, $this->primaryKey);
 
@@ -139,16 +155,78 @@ class vModel
 		if (in_array($paramA, self::MORE_WHERE_CONDITION)) {
 			$self->whereCondition[$field] = [
 				'more_condition' => $paramA,
-				'value'         => $paramB,
+				'value'          => $paramB,
 			];
 		} else {
 			$self->whereCondition[$field] = [
-				'value'         => $paramA,
+				'value'          => $paramA,
 				'more_condition' => '',
-			];
+			];	
 		}
 
 		return $self;
+	}
+
+	/**
+	 * where between condition fill
+	 * 
+	 * @author v429
+	 * @param  [type] $field     [table field]
+	 * @param  array  $condition [where between condition array]
+	 * @return [type]            [vModel]
+	 */
+	public function whereBetween($field, array $condition)
+	{
+		$self = isset($this) ? $this : new static;
+
+		//field is in table?
+		if (!in_array($field, $self->model->getFields())) {
+			die('ERROR field `' . $field . '` not exist in table '. $self->table . '!');
+		}
+
+		$self->whereCondition[$field] = ['more_condition' => 'between', 'value' => $condition];
+
+		return $self;
+	}
+
+	/**
+	 * where in condition fill
+	 * 
+	 * @author v429
+	 * @param  [type] $fields [table field]
+	 * @param  array  $param  [in array]
+	 * @return [type]         [description]
+	 */
+	public function whereIn($field, array $param)
+	{
+		//TODO
+	}
+
+	/**
+	 * or where condition
+	 * @author v429
+	 * @param  [type] $callback [where function callback]
+	 * @return [type]           [description]
+	 */
+	public function orWhere($callback)
+	{
+		//TODO:
+	}
+
+	/**
+	 * join condition
+	 * 
+	 * @author v429
+	 * @param  [type] $table    [join table]
+	 * @param  [type] $fieldA   [main table field]
+	 * @param  [type] $fieldB   [sec table field]
+	 * @param  string $condtion [connect condition default equal]
+	 * @param  string $joinType [table join type default left]
+	 * @return [type]           [description]
+	 */
+	public function join($table, $fieldA, $fieldB, $condtion = '=', $joinType = 'left')
+	{
+		//TODO:
 	}
 
 	/**
@@ -166,6 +244,23 @@ class vModel
 	}
 
 	/**
+	 * set select limit and offset
+	 * 
+	 * @author v429
+	 * @param  [type] $offset [description]
+	 * @param  [type] $limit  [description]
+	 * @return [type]         [description]
+	 */
+	public function limit($offset, $limit)
+	{
+		$this->limit = $limit;
+
+		$this->offset = $offset;
+
+		return $this;
+	}
+
+	/**
 	 * get recodes
 	 * 
 	 * @author v429
@@ -173,24 +268,25 @@ class vModel
 	 */
 	public function get()
 	{
-		$results = $whereCondition = [];		
+		$results = $whereCondition = [];
+		//echo '<pre>';print_r($this->whereCondition);exit;
 		//query where
 		foreach ($this->whereCondition as $k => $v) {
 			$whereCondition[$k] = $v['more_condition'] ? [$v['more_condition'], $v['value']] : $v['value'];
 		}
 
-		$selects = $this->model->select($whereCondition, $this->orderCondition);
+		//get select recodes
+		$selects = $this->model->select($whereCondition, $this->orderCondition, $this->offset, $this->limit);
 
 		foreach ($selects as $recode) {
-			$obj = new $this;
+			$obj = new QueryResult($this->table, $this->primaryKey);
 
 			foreach ($recode as $field => $re) {
 				$obj->$field = $re;
 			}
+			$results[] = $obj;			
+		}		
 
-			$results[] = $obj;
-		}
-		
 		return $results;
 	}
 
@@ -211,7 +307,63 @@ class vModel
 			$self->$key = $value;
 		}
 
-		return $self;
+		$result = new QueryResult($self->table, $self->primaryKey);
+
+		$result->create($fields);
+
+		return $result;
+	}
+
+	/**
+	 * query the original sql query
+	 * 
+	 * @author v429
+	 * @param  [type] $sql [original sql query]
+	 * @return recodes or insert id or bool
+	 */
+	public static function query($sql)
+	{
+		$self = new static;
+
+		$self->querySql = $sql;
+
+		if (strstr(strtolower($sql), 'select')) {
+			return $self->model->_getSelectResult($sql);
+		}
+
+		return $self->model->query($sql);
+	}
+
+		/**
+	 * start mysql transaction
+	 * 
+	 * @author v429
+	 * @return [type] [description]
+	 */
+	public static function startTransaction()
+	{
+		//TODO
+	}
+
+	/**
+	 * commit mysql transaction
+	 * 
+	 * @author v429
+	 * @return [type] [description]
+	 */
+	public static function commit()
+	{
+		//TODO
+	}
+
+	/**
+	 * roll back mysql transaction
+	 * @author v429
+	 * @return [type] [description]
+	 */
+	public static function rollback()
+	{
+		//TODO
 	}
 
 	/**
@@ -235,10 +387,10 @@ class vModel
 	 * @author v429
 	 * @return [type] [description]
 	 */
-	private function _afterQuery() {
+	protected function _afterQuery() {
 		$this->querySql[] = $this->model->sql;
 
-		unset($this->model, $this->table, $this->primaryKey);
+		//unset($this->model, $this->table, $this->primaryKey);
 	}
 
 	/**

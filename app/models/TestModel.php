@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Core\VModel;
+use Core\Model\vModel;
 
 class TestModel extends vModel {
 	

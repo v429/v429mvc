@@ -1,6 +1,6 @@
 <?php
 
-namespace Core;
+namespace Core\Model;
 
 /**
  * mysql connect and data model base object
@@ -81,9 +81,9 @@ class Model
 	/**
 	 * get select result by sql
 	 */
-	protected function _getSelectResult($sql) 
+	public function _getSelectResult($sql) 
 	{
-		$this->sql = $sql;
+		$this->sql[] = $sql;
 
 		$query = $this->mysql->query($sql);
 
@@ -278,7 +278,7 @@ class Model
 	 */
 	public function query($sql) 
 	{
-		$this->sql = $sql;
+		$this->sql[] = $sql;
 
 		if ($this->mysql->query($sql)) {
 			return $this->mysql->insert_id;
@@ -369,7 +369,7 @@ class Model
 		}
 
 		$sql .= ';';
-
+//echo $sql;exit;
 		$result = $this->_getSelectResult($sql);
 
 		return $result;
@@ -380,7 +380,7 @@ class Model
 	 */
 	public function find($id) 
 	{
-		$result = $this->get([$this->primaryKey => $id]);
+		$result = $this->select([$this->primaryKey => $id]);
 
 		return $result ? $result[0] : [];
 	}
