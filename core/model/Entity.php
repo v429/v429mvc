@@ -93,6 +93,15 @@ interface Entity
 	public function limit($offset, $limit);
 
 	/**
+	 * recodes fields select
+	 * 
+	 * @author v429
+	 * @param  array  $fields [description]
+	 * @return [type]         [description]
+	 */
+	public function select(array $fields);
+
+	/**
 	 * get recodes
 	 * 
 	 * @author v429

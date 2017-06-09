@@ -54,6 +54,12 @@ class vModel implements Entity
 	protected $orderCondition = [];
 
 	/**
+	 * [$selectFields description]
+	 * @var array
+	 */
+	protected $selectFields = [];
+
+	/**
 	 * group conditions
 	 * @var array
 	 */
@@ -76,6 +82,18 @@ class vModel implements Entity
 	 * @var integer
 	 */
 	protected $offset = 0;
+
+	/**
+	 * [$isSelectPrimaryKey description]
+	 * @var boolean
+	 */
+	protected $isSelectPrimaryKey = true;
+
+	/**
+	 * [$primaryValue description]
+	 * @var string
+	 */
+	public $primaryValue = '';
 
 
 	/**
@@ -113,10 +131,10 @@ class vModel implements Entity
 			}
 			$data[$field] = $this->$field;
 		}
-
+		
 		//do update query
-		if ($this->$primaryKey) {
-			$whereCondition = [$this->primaryKey => $this->$primaryKey];
+		if ($this->primaryValue) {
+			$whereCondition = [$this->primaryKey => $this->primaryValue];
 
 			$result = $this->model->update($whereCondition, $data);
 
@@ -130,7 +148,7 @@ class vModel implements Entity
 
 		$this->_afterQuery();
 
-		return $this->$primaryKey;
+		return $this->primaryValue;
 	}
 
 	/**
@@ -270,6 +288,24 @@ class vModel implements Entity
 	}
 
 	/**
+	 * recodes fields select
+	 * 
+	 * @author v429
+	 * @param  array  $fields [description]
+	 * @return [type]         [description]
+	 */
+	public function select(array $fields)
+	{
+		if (!in_array($this->primaryKey, $fields)) {
+			$this->isSelectPrimaryKey = false;
+		}
+
+		$this->selectFields = $fields;
+
+		return $this;
+	}
+
+	/**
 	 * get recodes
 	 * 
 	 * @author v429
@@ -279,6 +315,8 @@ class vModel implements Entity
 	{
 		$self = isset($this) ? $this : new static;
 
+		$primaryKeyField = $self->primaryKey;
+
 		$results = $whereCondition = [];
 
 		//query where
@@ -286,15 +324,26 @@ class vModel implements Entity
 			$whereCondition[$k] = $v['more_condition'] ? [$v['more_condition'], $v['value']] : $v['value'];
 		}
 
-		//get select recodes
-		$selects = $self->model->select($whereCondition, $self->orderCondition, $self->offset, $self->limit);
+		//set primary key
+		if (!$this->isSelectPrimaryKey) {
+			array_push($self->selectFields, $self->primaryKey);
+		}
 
+		//get select recodes
+		$selects = $self->model->select($whereCondition, $self->orderCondition, $self->offset, $self->limit, $self->selectFields);
+
+		//fill query result obj
 		foreach ($selects as $recode) {
 			$obj = new QueryResult($self->table, $self->primaryKey);
 
-			foreach ($recode as $field => $re) {
-				$obj->$field = $re;
+			$obj->primaryValue = $recode[$primaryKeyField];
+
+			//not select primary key
+			if (!$self->isSelectPrimaryKey) {
+				unset($recode[$primaryKeyField]);
 			}
+			
+			$obj->create($recode);
 			$results[] = $obj;			
 		}		
 
@@ -320,13 +369,25 @@ class vModel implements Entity
 		return $count;
 	}
 
+	/**
+	 * paginate recodes
+	 * 
+	 * @author v429
+	 * @param  [type] $limit [description]
+	 * @return [type]        [description]
+	 */
 	public function paginate($limit)
 	{
+		if ($limit == 0) {
+			return [];
+		}
 		$self = $this;
 
-		$page = $_POST['page'] ? $_POST['page'] : $_GET['page'];
+		$page   = isset($_POST['page']) ? $_POST['page'] : $_GET['page'];
 		$offset = $page ? ($page-1) * $limit : 0;
-		$this->limit($offset, $limit);
+
+		//set limit condition
+		$self->limit($offset, $limit);
 
 		$total = $self->count();
 

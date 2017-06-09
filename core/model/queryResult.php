@@ -16,6 +16,8 @@ class QueryResult
 	 */
 	protected $primaryKey = '';
 
+	public $primaryValue = '';
+
 	/**
 	 * $fieldsValues
 	 * @var array
@@ -45,6 +47,8 @@ class QueryResult
 	public function save() 
 	{
 		$vModel = new vModel($this->table, $this->primaryKey);
+
+		$vModel->primaryValue = $this->primaryValue;
 		
 		foreach ($this->fieldsValues as $field => $value) {
 			$vModel->$field = $value;

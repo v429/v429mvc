@@ -22,9 +22,13 @@ class indexController extends Controller {
 		$result->name = 'update name orm';
 		$result->save();*/
 
-		$result = TestModel::where('sex', 2)
-							->whereBetween('id', [1,3])->orderBy('sex', 'desc')->limit(0, 4)->get();
+		$result = TestModel::where('sex', 2)->select(['name', 'sex', 'id'])
+							->whereBetween('id', [4,6])->orderBy('sex', 'desc')->get();
 		//$result = TestModel::find(1);
+		foreach ($result as $key => $value) {
+			$value->birthday = '19910429-';
+			$value->save();
+		}
 
 		//$result->name = 'orm name save 2';
 		//$result->save();
@@ -64,7 +68,7 @@ class indexController extends Controller {
 
 	public function testInsert() 
 	{
-		$user = $this->loadM('usermodel');
+			$user = $this->loadM('usermodel');
 
 		$data = [
 			['name' => 'test-insert-1', 'content' => 'test-insert-1', 'sex' => 1, 'birthday' => '19910429'],
