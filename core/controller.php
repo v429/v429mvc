@@ -4,7 +4,8 @@ namespace Core;
 /**
  * v429 controller engine
  */
-class controller {
+class controller 
+{
 
 	
 	/**

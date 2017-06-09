@@ -1,12 +1,15 @@
 <?php
 
-namespace Core;
+namespace Core\Model;
 
 /**
  * mysql connect and data model base object
  */
 
-class Model {
+class Model 
+{
+
+	public $sql = [];
 
 	/**
 	 * @param $db config db name
@@ -38,9 +41,9 @@ class Model {
 	/**
 	 * construct v429 model !!!
 	 */
-	public function __construct() 
+	public function __construct($table = '', $primaryKey = '') 
 	{
-		$configs = include_once('app/config.php');
+		$configs = include('app/config.php');
 		$this->db = $configs['mysql']['db_database'];
 
 		if (!$configs) {
@@ -62,6 +65,15 @@ class Model {
 		//set charset
 		mysqli_set_charset($this->mysql, $configs['mysql']['db_charset']);
 
+		//fill self table and primary key
+		if ($table) {
+			$this->table = $table;
+		}
+
+		if ($primaryKey) {
+			$this->primaryKey = $primaryKey;
+		}
+
 		//init fields
 		$this->_initAllFIeld();
 	}
@@ -69,8 +81,10 @@ class Model {
 	/**
 	 * get select result by sql
 	 */
-	protected function _getSelectResult($sql) 
+	public function _getSelectResult($sql) 
 	{
+		$this->sql[] = $sql;
+
 		$query = $this->mysql->query($sql);
 
 		$data = array();
@@ -264,6 +278,8 @@ class Model {
 	 */
 	public function query($sql) 
 	{
+		$this->sql[] = $sql;
+
 		if ($this->mysql->query($sql)) {
 			return $this->mysql->insert_id;
 		}
@@ -281,6 +297,8 @@ class Model {
 		$sql .= ' VALUES(' . $this->_splitAddData($data). ');';
 
 		$this->query($sql);
+
+		return mysqli_insert_id($this->mysql);
 	}
 
 	/**
@@ -328,7 +346,7 @@ class Model {
 	/**
 	 * get records by where condition and order condition and limit condition and fields
 	 */
-	public function get($whereCondition, $orderBy = '', $offset = 0, $limit = 0, $fields = []) 
+	public function select($whereCondition, $orderBy = '', $offset = 0, $limit = 0, $fields = []) 
 	{
 		$sql = "SELECT * FROM `" . $this->table . '` ';
 
@@ -351,10 +369,26 @@ class Model {
 		}
 
 		$sql .= ';';
-
+//echo $sql;exit;
 		$result = $this->_getSelectResult($sql);
 
 		return $result;
+	}
+
+	/**
+	 * get recode count by where condition
+	 */
+	public function count($whereCondition = '')
+	{
+		$sql = "SELECT count(*) FROM `" . $this->table . '` ';
+
+		$sql .= $this->_whereCondition($whereCondition);
+
+		$sql .= ';';
+
+		$result = $this->_getSelectResult($sql);
+
+		return $result[0]['count(*)'];
 	}
 
 	/**
@@ -362,8 +396,19 @@ class Model {
 	 */
 	public function find($id) 
 	{
-		$result = $this->get([$this->primaryKey => $id]);
+		$result = $this->select([$this->primaryKey => $id]);
 
 		return $result ? $result[0] : [];
+	}
+
+	/**
+	 * get fields public function
+	 * 
+	 * @author v429
+	 * @return array fields
+	 */
+	public function getFields()
+	{
+		return $this->_fields;
 	}
 }

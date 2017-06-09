@@ -11,3 +11,6 @@ model层实现insert批量插入
 #v1.2.0
 psr-4 autoload
 实现利用composer配置自动加载
+
+#v1.3.0
+基于原有Model实现简易ORM

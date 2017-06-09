@@ -4,17 +4,41 @@ namespace App\Controller;
 
 use Core\Controller;
 use App\Models\UserModel;
+use App\Models\TestModel;
 
 class indexController extends Controller {
 	
 	public function index() 
 	{
-		$user = new UserModel();
+/*		$test = new TestModel();
+		$test->name = 'orm name';
+		$test->content = 'orm content';
+		$test->birthday = time();
+		$test->sex = 1;
 
+		$test->save();*/
+
+/*		$result = TestModel::find(1);
+		$result->name = 'update name orm';
+		$result->save();*/
+
+		$result = TestModel::where('sex', 2)->select(['name', 'sex', 'id'])
+							->whereBetween('id', [4,6])->orderBy('sex', 'desc')->get();
+		//$result = TestModel::find(1);
+		foreach ($result as $key => $value) {
+			$value->birthday = '19910429-';
+			$value->save();
+		}
+
+		//$result->name = 'orm name save 2';
+		//$result->save();
+		echo '<pre>';print_r($result);exit;
+		//$user = new UserModel();
+/*
 		$userInfo = $user->find(1);
 		$data['user'] = $userInfo;
 
-		$this->display('index-test', $data);
+		$this->display('index-test', $data);*/
 	}
 
 	public function userList() {
@@ -29,7 +53,7 @@ class indexController extends Controller {
 
 	public function getName() 
 	{
-		if ($_POST['sub-add-user']) {
+		if (isset($_POST['sub-add-user'])) {
 			$values = $_POST;
 
 			$user = $this->loadM('usermodel');
@@ -44,7 +68,7 @@ class indexController extends Controller {
 
 	public function testInsert() 
 	{
-		$user = $this->loadM('usermodel');
+			$user = $this->loadM('usermodel');
 
 		$data = [
 			['name' => 'test-insert-1', 'content' => 'test-insert-1', 'sex' => 1, 'birthday' => '19910429'],
@@ -58,4 +82,3 @@ class indexController extends Controller {
 		var_dump($rs);
 	}
 }
-
