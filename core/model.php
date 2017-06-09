@@ -1,9 +1,17 @@
 <?php
+
+namespace Core;
+
 /**
  * mysql connect and data model base object
  */
 
 class Model {
+
+	/**
+	 * @param $db config db name
+	 */
+	protected $db;
 
 	/**
 	 * @param $table table name define
@@ -33,12 +41,13 @@ class Model {
 	public function __construct() 
 	{
 		$configs = include_once('app/config.php');
-		
+		$this->db = $configs['mysql']['db_database'];
+
 		if (!$configs) {
 			die('ERROR:config file not exist!');
 		}
 		//set mysql connect
-		$this->mysql =  new mysqli(
+		$this->mysql =  new \mysqli(
 			$configs['mysql']['db_host'], 
 			$configs['mysql']['db_user'], 
 			$configs['mysql']['db_pwd'], 
@@ -51,7 +60,7 @@ class Model {
 		}
 
 		//set charset
-		mysqli_set_charset($this->mysql, $GLOBALS['config']['mysql']['db_charset']);
+		mysqli_set_charset($this->mysql, $configs['mysql']['db_charset']);
 
 		//init fields
 		$this->_initAllFIeld();
@@ -77,9 +86,10 @@ class Model {
 	 */
 	protected function _initAllFIeld() 
 	{
-		$sql = 'select COLUMN_NAME from information_schema.COLUMNS where table_name = "' . $this->table.'";';
+		$sql = 'select COLUMN_NAME from information_schema.COLUMNS where table_name = "' . $this->table.'"
+				AND `TABLE_SCHEMA`="'. $this->db .'";';
 
-		$this->fields = array_column($this->_getSelectResult($sql), 'COLUMN_NAME');
+		$this->_fields = array_column($this->_getSelectResult($sql), 'COLUMN_NAME');
 	}
 
 	/**
@@ -88,7 +98,7 @@ class Model {
 	protected function _splitFieldStr() 
 	{
 		$result = array();
-		foreach ($this->fields as $key => &$value) {
+		foreach ($this->_fields as $key => &$value) {
 			//add ` to each field
 			if ($value == 'id') {
 				continue;
@@ -165,11 +175,10 @@ class Model {
 	{
 		$result = 'WHERE ';
 
-		$this->_stringData($condition);
-
 		foreach ($condition as $key => $value) {
 			if (in_array($key, $this->_fields)) {
 				if (!is_array($value)) {
+					$this->_stringData($condition);
 					$result .= "`" . $key . "`=" . $value. ' AND ';
 				} else {
 					$result .= $this->_moreWhere($key, $value);
@@ -190,7 +199,9 @@ class Model {
 		$result = '`' . $field . '`';
 
 		$tag = strtolower($condition[0]);
-		$this->_stringData($condition[1]);
+		if (gettype($condition[1]) == 'string') {
+			$condition[1] == "'" . $condition[1] . "'";
+		}
 
 		switch ($tag) {
 			case 'in':
@@ -277,7 +288,15 @@ class Model {
 	 */
 	public function insert($data) 
 	{
-		//TODO:
+		$sql = "INSERT INTO `" . $this->table . "`" . $this->_splitFieldStr() . ' VALUES';
+
+		foreach ($data as $key => $value) {
+			$sql .= '(' . $this->_splitAddData($value) . '),';
+		}
+		//remove last ','
+		$sql = substr($sql, 0, -1) . ';';
+		
+		$this->query($sql);
 	}
 
 	/**

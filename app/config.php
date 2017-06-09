@@ -7,7 +7,5 @@ return [
 		'db_pwd'          => 'root',
 		'db_database' => 'test',
 		'db_charset'    => 'utf8',
-	],
-	
-
+	],	
 ];

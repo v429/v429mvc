@@ -1,0 +1,30 @@
+{
+    "name": "v429/v429mvc",
+    "description": "The v429 Framework.",
+    "keywords": ["framework"],
+    "type": "project",
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "require-dev": {
+
+    },
+
+    "autoload": {
+    	"files" :[
+    		"core/controller.php",
+    		"core/model.php",
+    		"core/view.php",
+    		"core/request.php",
+    		"core/v429.php"
+    	],
+        "classmap": [
+            "app/controllers",
+            "app/models",
+            "app/views"
+        ],
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

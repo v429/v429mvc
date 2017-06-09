@@ -1,6 +1,7 @@
 <?php
+require __DIR__."/vendor/autoload.php";
 
-include_once('core/include.php');
+use Core\V429;
 
 $app = new v429();
 

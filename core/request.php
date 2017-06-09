@@ -1,4 +1,5 @@
 <?php
+namespace Core;
 
 /**
  * Request object for routes and controllers
@@ -142,9 +143,8 @@ class Request {
  			die('controller not found!');
  		}
 
- 		include_once('app/controllers/' . $request['file']);
-
- 		$controller = new $request['name']();
+		$controllerName = 'App\Controller\\'.$request['name'];
+ 		$controller = new $controllerName();
 
  		if (!$controller) {
  			die('controller'. $this->_currentController . ' not found!');
