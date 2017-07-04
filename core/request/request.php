@@ -1,5 +1,5 @@
 <?php
-namespace Core;
+namespace Core\Request;
 
 /**
  * Request object for routes and controllers
@@ -38,6 +38,11 @@ class Request
  	protected $_registControllers;
 
  	/**
+ 	 * @var array
+ 	 */
+ 	protected $_requestHeaders = [];
+
+ 	/**
  	 * construct the v429!!
  	 */
  	public function __construct()
@@ -54,6 +59,8 @@ class Request
  		}
 
  		$this->_registControllerFIles();
+
+ 		$this->_requestHeaders = $this->getAllHeaders();
  	}
 
  	/**
@@ -173,4 +180,20 @@ class Request
  	public function getCurrentAction() {
  		return $this->_currentAction;
  	}
+
+ 	/**
+ 	 * get all request header param
+ 	 * 
+ 	 * @author v429
+ 	 * @return [array] header params
+ 	 */
+ 	public function getAllHeaders() 
+    { 
+       foreach ($_SERVER as $name => $value) { 
+           if (substr($name, 0, 5) == 'HTTP_') { 
+               $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value; 
+           } 
+       } 
+       return $headers; 
+    } 
 }

@@ -2,7 +2,7 @@
 
 namespace Core;
 
-use Core\Request;
+use Core\Request\Request;
 
 /**
  * start app v429!

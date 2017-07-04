@@ -11,14 +11,13 @@
     },
 
     "autoload": {
-    	"files" :[
-    		"core/controller.php",    		
+    	"files" :[ 		
     		"core/view.php",
-    		"core/request.php",
     		"core/v429.php"
     	],
         "classmap": [
             "core/model/",
+            "core/request/",
             "app/controllers",
             "app/models",
             "app/views"

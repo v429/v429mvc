@@ -1,10 +1,10 @@
 <?php
-namespace Core;
+namespace Core\Request;
 
 /**
  * v429 controller engine
  */
-class controller 
+class Controller 
 {
 
 	

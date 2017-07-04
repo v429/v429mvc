@@ -14,3 +14,6 @@ psr-4 autoload
 
 #v1.3.0
 基于原有Model实现简易ORM
+
+#v1.4.0
+优化request

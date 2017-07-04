@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use Core\Controller;
+use Core\Request\Controller;
+use Core\Request\Input;
 use App\Models\UserModel;
 use App\Models\TestModel;
 
@@ -10,6 +11,9 @@ class indexController extends Controller {
 	
 	public function index() 
 	{
+
+/*		$name = Input::get('name', 'post');
+echo '<pre>';print_r($name);exit;*/
 /*		$test = new TestModel();
 		$test->name = 'orm name';
 		$test->content = 'orm content';
@@ -21,9 +25,9 @@ class indexController extends Controller {
 /*		$result = TestModel::find(1);
 		$result->name = 'update name orm';
 		$result->save();*/
-
+		
 		$result = TestModel::where('sex', 2)->select(['name', 'sex', 'id'])
-							->whereBetween('id', [4,6])->orderBy('sex', 'desc')->get();
+							->whereBetween('id', [4,10])->orderBy('sex', 'desc')->get();
 		//$result = TestModel::find(1);
 		foreach ($result as $key => $value) {
 			$value->birthday = '19910429-';
