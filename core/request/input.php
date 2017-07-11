@@ -3,9 +3,12 @@
 namespace Core\Request;
 
 use Core\Request\Request;
+use Core\Request\Validate;
 
 class Input extends Request 
 {
+
+	protected $paramValidateErrorMsg = array();
 	
 	public function __construct()
 	{
@@ -20,7 +23,7 @@ class Input extends Request
 	 * @param  string $method request method
 	 * @return [type]         [description]
 	 */
-	public static function get($name, $method = '')
+	public static function get($name, $rule = '', $method = '')
 	{
 		if (!$method) {
 			$method = $_SERVER['REQUEST_METHOD'];
@@ -38,7 +41,7 @@ class Input extends Request
 
 		$value = htmlspecialchars(trim($value));
 
-		return self::checkParam($value);
+		return self::checkParam($value, $rule);
 	}
 
 	/**
@@ -48,10 +51,20 @@ class Input extends Request
 	 * @param  [type] $value param value
 	 * @return [type]        [description]
 	 */
-	public static function checkParam($value)
+	public static function checkParam($value, $rule = '')
 	{
-		//check rule TODO
+		$validate = new Validate($value, $rule);
+
+		if (!$validate->check()) {
+			$this->paramValidateErrorMsg[] = $validate->errorMsg;
+		}
+
 		return $value;
+	}
+
+	public static function getErrorMsg()
+	{
+		return $this->paramValidateErrorMsg;
 	}
 
 }

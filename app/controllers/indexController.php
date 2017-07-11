@@ -12,8 +12,8 @@ class indexController extends Controller {
 	public function index() 
 	{
 
-/*		$name = Input::get('name', 'post');
-echo '<pre>';print_r($name);exit;*/
+		$name = Input::get('name', 'required|min:7', 'get');
+echo '<pre>';print_r($name);exit;
 /*		$test = new TestModel();
 		$test->name = 'orm name';
 		$test->content = 'orm content';
