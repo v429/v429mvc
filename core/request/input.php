@@ -2,17 +2,24 @@
 
 namespace Core\Request;
 
-use Core\Request\Request;
 use Core\Request\Validate;
 
-class Input extends Request 
+class Input
 {
-
-	protected $paramValidateErrorMsg = array();
+	/**
+	 * @var [type]
+	 */
+	protected $validate;
 	
+	/**
+	 * construct the input
+	 * 
+	 * @author v429
+	 */
 	public function __construct()
 	{
-		parent::__construct();
+		//validate
+		$this->validate = new Validate();
 	}
 
 	/**
@@ -23,13 +30,14 @@ class Input extends Request
 	 * @param  string $method request method
 	 * @return [type]         [description]
 	 */
-	public static function get($name, $rule = '', $method = '')
+	public function get($name, $rule = '', $method = '')
 	{
 		if (!$method) {
 			$method = $_SERVER['REQUEST_METHOD'];
 		}
 		$method = strtoupper($method);
 
+		//get input value
 		switch ($method) {
 			case 'GET':
 				$value = isset($_GET[$name]) ? $_GET[$name] : '';break;
@@ -40,8 +48,8 @@ class Input extends Request
 		}
 
 		$value = htmlspecialchars(trim($value));
-
-		return self::checkParam($value, $rule);
+		//check param
+		return $this->checkParam($name, $value, $rule);
 	}
 
 	/**
@@ -51,20 +59,21 @@ class Input extends Request
 	 * @param  [type] $value param value
 	 * @return [type]        [description]
 	 */
-	public static function checkParam($value, $rule = '')
+	public function checkParam($name ,$value, $rule = '')
 	{
-		$validate = new Validate($value, $rule);
-
-		if (!$validate->check()) {
-			$this->paramValidateErrorMsg[] = $validate->errorMsg;
-		}
+		$this->validate->check($value, $rule, $name);
 
 		return $value;
 	}
 
-	public static function getErrorMsg()
+	/**
+	 * get all validate error massage
+	 * 
+	 * @author v429
+	 */
+	public function getErrorMsg()
 	{
-		return $this->paramValidateErrorMsg;
+		return $this->validate->errorMsg;
 	}
 
 }

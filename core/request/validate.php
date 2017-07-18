@@ -5,30 +5,31 @@ namespace Core\Request;
 class Validate
 {
 	/**
-	 * @var boolean
-	 */
-	protected $isPass   = true;
-
-	/**
 	 * @var string
 	 */
-	protected $value    = '';
+	public $errorMsg = array();
 
 	/**
-	 * @var string
-	 */
-	protected $errorMsg = '';
-
-	/**
-	 * construct the validate
+	 * add a error massage string
 	 * 
 	 * @author v429
-	 * @param  $value   checked param
-	 * @param  string $ruleStr rule string
 	 */
-	public function __construct($value, $ruleStr = '')
+	private function errorMsgAdd($name, $method)
 	{
-		$this->value = $value;
+		$this->errorMsg[] = $name . ':' . $method . ' validate failed!';
+	}
+
+	/**
+	 * check the param with rule string
+	 * 
+	 * @author v429
+	 * @param  $value param value
+	 * @param  $ruleStr rule string
+	 * @param  $name param name
+	 */
+	public function check($value, $ruleStr, $name)
+	{
+		$isPass = true;
 
 		if ($ruleStr) 
 		{
@@ -38,28 +39,32 @@ class Validate
 			{
 				//without params
 				if (!strstr($rule, ':')) {
-					$this->isPass = call_user_func(array('self', $rule), $this->value);
+					$isPass = call_user_func(array('self', $rule), $value);
+
+					if (!$isPass) 
+					{
+						$this->errorMsgAdd($name, $rule);
+					}
 				} else {
 				//with params
 					$ruleArr = explode(':', $rule);
 
 					$params = explode(',', $ruleArr[1]);
 
+					array_unshift($params, $value);
+
 					$method = $ruleArr[0];
-					$this->isPass = call_user_func_array(array('self',$method), $params);	
+					$isPass = call_user_func_array(array('self',$method), $params);	
+
+					if (!$isPass) 
+					{
+						$this->errorMsgAdd($name, $method);
+					}
 				}
 			}
 		}
-	}
 
-	public function errorMsgAdd($value, $method)
-	{
-		$this->errorMsg = $value . ':' . $method . ' validate failed!';
-	}
-
-	public function check()
-	{
-		return $this->isPass;
+		return $isPass;
 	}
 
 	/**
@@ -68,9 +73,9 @@ class Validate
 	 * @author v429
 	 * 
 	 */
-	public function required()
+	public function required($value)
 	{
-		return $this->value ? true : false;
+		return $value ? true : false;
 	}
 
 	/**
@@ -78,9 +83,9 @@ class Validate
 	 * 
 	 * @author v429
 	 */
-	public function numeric()
+	public function numeric($value)
 	{
-		return is_numeric($this->value) ? true : false;
+		return is_numeric($value) ? true : false;
 	}
 
 	/**
@@ -88,9 +93,9 @@ class Validate
 	 * 
 	 * @author v429
 	 */
-	public function min($min)
+	public function min($value, $min)
 	{
-		return $this->value >= $min ? true : false;
+		return strlen($value) >= $min ? true : false;
 	}
 
 	/**
@@ -98,9 +103,9 @@ class Validate
 	 * 
 	 * @author v429
 	 */
-	public function max($max)
+	public function max($value, $max)
 	{
-		return $this->value <= $max ? true : false;
+		return strlen($value) <= $max ? true : false;
 	}
 
 	/**
@@ -108,9 +113,9 @@ class Validate
 	 * 
 	 * @author v429
 	 */
-	public function between($max, $min)
+	public function between($value, $max, $min)
 	{
-		if ($this->value >= $min && $value <= $max)
+		if (strlen($value) >= $min && strlen($value) <= $max)
 		{
 			return true;
 		}
@@ -123,12 +128,12 @@ class Validate
 	 * 
 	 * @author v429
 	 */
-	public function phone()
+	public function phone($value)
 	{
-		if (!is_numeric($this->value)) {
+		if (!is_numeric($value)) {
             return false;
         }
-        return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $this->value) ? true : false;
+        return preg_match('#^13[\d]{9}$|^14[5,7]{1}\d{8}$|^15[^4]{1}\d{8}$|^17[0,6,7,8]{1}\d{8}$|^18[\d]{9}$#', $value) ? true : false;
 	}
 
 	/**
@@ -136,9 +141,9 @@ class Validate
 	 * 
 	 * @author v429
 	 */
-	public function email()
+	public function email($value)
 	{
-		if (ereg('^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+',$this->value)){
+		if (ereg('^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+',$value)){
 			return true;
 		}
 

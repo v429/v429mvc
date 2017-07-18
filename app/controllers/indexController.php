@@ -12,8 +12,9 @@ class indexController extends Controller {
 	public function index() 
 	{
 
-		$name = Input::get('name', 'required|min:7', 'get');
-echo '<pre>';print_r($name);exit;
+		$name = $this->input->get('user', 'required|min:2|phone|max:4', 'get');
+
+		echo '<pre>';print_r($this->input->getErrorMsg());exit;
 /*		$test = new TestModel();
 		$test->name = 'orm name';
 		$test->content = 'orm content';

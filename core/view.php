@@ -29,7 +29,7 @@ class View
 	{
 		$this->viewDir = $dir;
 
-		$this->viewCacheDir = "cache/views/";
+		$this->viewCacheDir = "runtime/views/";
 	}
 
 	/**

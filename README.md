@@ -1,6 +1,8 @@
 # v429mvc
 练习，摸索，巩固，知新
 
+TODO: response;language;event;upload;
+
 #v1.0.0
 基本实现mysql->model->controller->request->route->view
 
@@ -16,4 +18,4 @@ psr-4 autoload
 基于原有Model实现简易ORM
 
 #v1.4.0
-优化request
+优化request;实现简易input,validate;
