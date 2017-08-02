@@ -6,14 +6,16 @@ use Core\Request\Controller;
 use Core\Request\Input;
 use App\Models\UserModel;
 use App\Models\TestModel;
+use Core\Response\Response;
 
 class indexController extends Controller {
 	
 	public function index() 
 	{
-
+echo 'hello world';exit;
 		$name = $this->input->get('user', 'required|min:2|phone|max:4', 'get');
 
+		Response::redirect('http://www.baidu.com');
 		echo '<pre>';print_r($this->input->getErrorMsg());exit;
 /*		$test = new TestModel();
 		$test->name = 'orm name';

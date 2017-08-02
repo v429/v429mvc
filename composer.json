@@ -18,6 +18,7 @@
         "classmap": [
             "core/model/",
             "core/request/",
+            "core/response",
             "app/controllers",
             "app/models",
             "app/views"
