@@ -160,7 +160,7 @@ class vModel implements Entity
 	 * @param  string $paramB [value]
 	 * @return [type] obj     [self]
 	 */
-	public function where($field, $paramA, $paramB = '')
+	public static function where($field, $paramA, $paramB = '')
 	{
 		$self = isset($this) ? $this : new static;
 

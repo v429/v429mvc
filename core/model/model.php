@@ -2,6 +2,7 @@
 
 namespace Core\Model;
 
+use Core\Model\Connection;
 /**
  * mysql connect and data model base object
  */
@@ -9,7 +10,7 @@ namespace Core\Model;
 class Model 
 {
 
-	public $sql = [];
+	protected $sql = [];
 
 	/**
 	 * @param $db config db name
@@ -36,34 +37,15 @@ class Model
 	 */
 	protected $primaryKey = 'id';
 
-
-
 	/**
-	 * construct v429 model !!!
+	 * construct v429 model
 	 */
 	public function __construct($table = '', $primaryKey = '') 
 	{
+		$this->mysql = Connection::getInstance();
+
 		$configs = include('app/config.php');
 		$this->db = $configs['mysql']['db_database'];
-
-		if (!$configs) {
-			die('ERROR:config file not exist!');
-		}
-		//set mysql connect
-		$this->mysql =  new \mysqli(
-			$configs['mysql']['db_host'], 
-			$configs['mysql']['db_user'], 
-			$configs['mysql']['db_pwd'], 
-			$configs['mysql']['db_database']
-		);
-
-		//connect error
-		if ($this->mysql->connect_error) {
-			die('Error : ('. $this->mysql->connect_errno .') '. $this->mysql->connect_error);
-		}
-
-		//set charset
-		mysqli_set_charset($this->mysql, $configs['mysql']['db_charset']);
 
 		//fill self table and primary key
 		if ($table) {
@@ -369,7 +351,7 @@ class Model
 		}
 
 		$sql .= ';';
-//echo $sql;exit;
+
 		$result = $this->_getSelectResult($sql);
 
 		return $result;
@@ -410,5 +392,16 @@ class Model
 	public function getFields()
 	{
 		return $this->_fields;
+	}
+
+	/**
+	 * get query sqls
+	 * 
+	 * @author v429
+	 * @return array fields
+	 */
+	public function getSqls()
+	{
+		return $this->sql;
 	}
 }

@@ -30,7 +30,7 @@ interface Entity
 	 * @param  string $paramB [value]
 	 * @return [type] obj     [self]
 	 */
-	public function where($fields, $paramA, $paramB = '');
+	public static function where($fields, $paramA, $paramB = '');
 
 	/**
 	 * where between condition fill
